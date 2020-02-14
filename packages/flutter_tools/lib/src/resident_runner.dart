@@ -165,17 +165,20 @@ class FlutterDevice {
     CompileExpression compileExpression,
     ReloadMethod reloadMethod,
   }) {
+    try {
+      globals.printStatus('FlutterDevice.connect:+');
     final Completer<void> completer = Completer<void>();
     StreamSubscription<void> subscription;
     bool isWaitingForVm = false;
 
     subscription = observatoryUris.listen((Uri observatoryUri) async {
       // FYI, this message is used as a sentinel in tests.
-      globals.printTrace('Connecting to service protocol: $observatoryUri');
+      globals.printStatus('FlutterDevice.connect: Connecting to service protocol: $observatoryUri');
       isWaitingForVm = true;
       VMService service;
 
       try {
+        globals.printStatus('FlutterDevice.connect: await VMService.Connect');
         service = await VMService.connect(
           observatoryUri,
           reloadSources: reloadSources,
@@ -185,23 +188,26 @@ class FlutterDevice {
           device: device,
         );
       } on Exception catch (exception) {
-        globals.printTrace('Fail to connect to service protocol: $observatoryUri: $exception');
+        globals.printStatus('FlutterDevice.connect: 1 Fail to connect to service protocol: $observatoryUri: $exception');
         if (!completer.isCompleted && !_isListeningForObservatoryUri) {
-          completer.completeError('failed to connect to $observatoryUri');
+          globals.printStatus('FlutterDevice.connect: 2');
+          completer.completeError('FlutterDevice.connect: failed to connect to $observatoryUri');
         }
+        globals.printStatus('FlutterDevice.connect: 3');
         return;
       }
       if (completer.isCompleted) {
+        globals.printStatus('FlutterDevice.connect: 4');
         return;
       }
-      globals.printTrace('Successfully connected to service protocol: $observatoryUri');
+      globals.printStatus('FlutterDevice.connect: Successfully connected to service protocol: $observatoryUri');
 
       vmService = service;
       device.getLogReader(app: package).connectedVMService = vmService;
       completer.complete();
       await subscription.cancel();
     }, onError: (dynamic error) {
-      globals.printTrace('Fail to handle observatory URI: $error');
+      globals.printStatus('FlutterDevice.connect: Fail to handle observatory URI: $error');
     }, onDone: () {
       _isListeningForObservatoryUri = false;
       if (!completer.isCompleted && !isWaitingForVm) {
@@ -210,6 +216,9 @@ class FlutterDevice {
     });
     _isListeningForObservatoryUri = true;
     return completer.future;
+    } finally {
+      globals.printStatus('FlutterDevice.connect:-');
+    }
   }
 
   Future<void> refreshViews() async {
@@ -936,6 +945,8 @@ abstract class ResidentRunner {
     CompileExpression compileExpression,
     ReloadMethod reloadMethod,
   }) async {
+    try {
+      globals.printStatus('ResidentRunner.connectToServiceProtocol:+');
     if (!debuggingOptions.debuggingEnabled) {
       throw 'The service protocol is not enabled.';
     }
@@ -944,17 +955,22 @@ abstract class ResidentRunner {
 
     bool viewFound = false;
     for (final FlutterDevice device in flutterDevices) {
+      globals.printStatus('ResidentRunner.connectToServiceProtocol: 1');
       await device.connect(
         reloadSources: reloadSources,
         restart: restart,
         compileExpression: compileExpression,
         reloadMethod: reloadMethod,
       );
+      globals.printStatus('ResidentRunner.connectToServiceProtocol: 2');
       await device.getVMs();
+      globals.printStatus('ResidentRunner.connectToServiceProtocol: 3');
       await device.refreshViews();
       if (device.views.isNotEmpty) {
+        globals.printStatus('ResidentRunner.connectToServiceProtocol: 4');
         viewFound = true;
       }
+      globals.printStatus('ResidentRunner.connectToServiceProtocol: 5');
     }
     if (!viewFound) {
       if (flutterDevices.length == 1) {
@@ -973,6 +989,9 @@ abstract class ResidentRunner {
         _serviceProtocolDone,
         onError: _serviceProtocolError,
       ).whenComplete(_serviceDisconnected));
+    }
+    } finally {
+      globals.printStatus('ResidentRunner.connectToServiceProtocol:-');
     }
   }
 
