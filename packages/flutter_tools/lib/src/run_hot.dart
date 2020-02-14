@@ -206,6 +206,8 @@ class HotRunner extends ResidentRunner {
     Completer<DebugConnectionInfo> connectionInfoCompleter,
     Completer<void> appStartedCompleter,
   }) async {
+    try {
+      globals.printStatus('HotRunner.attach:+');
     _didAttach = true;
     try {
       await connectToServiceProtocol(
@@ -310,6 +312,9 @@ class HotRunner extends ResidentRunner {
     }
     await cleanupAtFinish();
     return result;
+    } finally {
+      globals.printStatus('HotRunner.attach:-');
+    }
   }
 
   @override
