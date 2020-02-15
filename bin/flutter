@@ -104,11 +104,12 @@ function upgrade_flutter () {
   local revision="$(cd "$FLUTTER_ROOT"; git rev-parse HEAD)"
 
   # Invalidate cache if:
+  #  * BUILD_TOOL environment variable is present, or
   #  * SNAPSHOT_PATH is not a file, or
   #  * STAMP_PATH is not a file with nonzero size, or
   #  * Contents of STAMP_PATH is not our local git HEAD revision, or
   #  * pubspec.yaml last modified after pubspec.lock
-  if [[ ! -f "$SNAPSHOT_PATH" || ! -s "$STAMP_PATH" || "$(cat "$STAMP_PATH")" != "$revision" || "$FLUTTER_TOOLS_DIR/pubspec.yaml" -nt "$FLUTTER_TOOLS_DIR/pubspec.lock" ]]; then
+  if [[ "$BUILD_TOOL" || ! -f "$SNAPSHOT_PATH" || ! -s "$STAMP_PATH" || "$(cat "$STAMP_PATH")" != "$revision" || "$FLUTTER_TOOLS_DIR/pubspec.yaml" -nt "$FLUTTER_TOOLS_DIR/pubspec.lock" ]]; then
     rm -f "$FLUTTER_ROOT/version"
     touch "$FLUTTER_ROOT/bin/cache/.dartignore"
     "$FLUTTER_ROOT/bin/internal/update_dart_sdk.sh"

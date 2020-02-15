@@ -35,6 +35,7 @@ import 'src/commands/inject_plugins.dart';
 import 'src/commands/install.dart';
 import 'src/commands/logs.dart';
 import 'src/commands/make_host_app_editable.dart';
+import 'src/commands/noop.dart';
 import 'src/commands/packages.dart';
 import 'src/commands/precache.dart';
 import 'src/commands/run.dart';
@@ -87,6 +88,7 @@ Future<void> main(List<String> args) async {
     InstallCommand(),
     LogsCommand(),
     MakeHostAppEditableCommand(),
+    NoopCommand(),
     PackagesCommand(),
     PrecacheCommand(verboseHelp: verboseHelp),
     RunCommand(verboseHelp: verboseHelp),

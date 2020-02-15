@@ -42,7 +42,11 @@ class FlutterCommandRunner extends CommandRunner<void> {
       '    Create a new Flutter project in the specified directory.\n'
       '\n'
       '  flutter run [options]\n'
-      '    Run your Flutter application on an attached device or in an emulator.',
+      '    Run your Flutter application on an attached device or in an emulator.\n'
+      '\n'
+      'Environment variables:\n'
+      '\n'
+      '  BUILD_TOOL                   If present force flutter to be built, can be used with noop command to just build itself.',
   ) {
     argParser.addFlag('verbose',
         abbr: 'v',
