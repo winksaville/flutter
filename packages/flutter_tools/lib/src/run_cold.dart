@@ -49,7 +49,7 @@ class ColdRunner extends ResidentRunner {
     String route,
   }) async {
     try {
-    globals.printStatus('ColdRunner.run:+');
+    globals.printTrace('ColdRunner.run:+');
     final bool prebuiltMode = applicationBinary != null;
     if (!prebuiltMode) {
       if (!globals.fs.isFileSync(mainPath)) {
@@ -134,7 +134,7 @@ class ColdRunner extends ResidentRunner {
     Completer<void> appStartedCompleter,
   }) async {
     try {
-    globals.printStatus('ColdRunner.attach:+');
+    globals.printTrace('ColdRunner.attach:+');
     _didAttach = true;
     try {
       await connectToServiceProtocol();
@@ -165,7 +165,7 @@ class ColdRunner extends ResidentRunner {
     await cleanupAtFinish();
     return 0;
     } finally {
-      globals.printStatus('ColdRunner.attach:-');
+      globals.printTrace('ColdRunner.attach:-');
     }
   }
 
