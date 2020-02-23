@@ -44,9 +44,8 @@ class FlutterCommandRunner extends CommandRunner<void> {
       '  flutter run [options]\n'
       '    Run your Flutter application on an attached device or in an emulator.\n'
       '\n'
-      'Environment variables:\n'
-      '\n'
-      '  BUILD_TOOL                   If present force flutter to be built, can be used with noop command to just build itself.',
+      '  flutter build self\n'
+      '    Build the flutter too itself.',
   ) {
     argParser.addFlag('verbose',
         abbr: 'v',

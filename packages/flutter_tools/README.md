@@ -88,5 +88,5 @@ This is what we do in the continuous integration bots.
 
 To force the Flutter Tools snapshot to be regenerated, run:
 ```shell
-$ BUILD_TOOL=1 flutter noop
+$ flutter build self
 ```

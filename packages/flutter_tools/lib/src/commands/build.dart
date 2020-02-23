@@ -7,6 +7,7 @@ import 'dart:async';
 import '../aot.dart';
 import '../bundle.dart';
 import '../commands/build_linux.dart';
+import '../commands/build_self.dart';
 import '../commands/build_macos.dart';
 import '../commands/build_windows.dart';
 import '../runner/flutter_command.dart';
@@ -35,6 +36,7 @@ class BuildCommand extends FlutterCommand {
     addSubcommand(BuildWebCommand());
     addSubcommand(BuildMacosCommand());
     addSubcommand(BuildLinuxCommand());
+    addSubcommand(BuildSelfCommand());
     addSubcommand(BuildWindowsCommand());
     addSubcommand(BuildFuchsiaCommand(verboseHelp: verboseHelp));
   }
