@@ -108,7 +108,7 @@ function upgrade_flutter () {
   #  * STAMP_PATH is not a file with nonzero size, or
   #  * Contents of STAMP_PATH is not our local git HEAD revision, or
   #  * pubspec.yaml last modified after pubspec.lock
-  if [[ ! -f "$SNAPSHOT_PATH" || ! -s "$STAMP_PATH" || "$(cat "$STAMP_PATH")" != "$revision" || "$FLUTTER_TOOLS_DIR/pubspec.yaml" -nt "$FLUTTER_TOOLS_DIR/pubspec.lock" ]]; then
+  if [[ "$REBUILD_SELF" == "true" || ! -f "$SNAPSHOT_PATH" || ! -s "$STAMP_PATH" || "$(cat "$STAMP_PATH")" != "$revision" || "$FLUTTER_TOOLS_DIR/pubspec.yaml" -nt "$FLUTTER_TOOLS_DIR/pubspec.lock" ]]; then
     rm -f "$FLUTTER_ROOT/version"
     touch "$FLUTTER_ROOT/bin/cache/.dartignore"
     "$FLUTTER_ROOT/bin/internal/update_dart_sdk.sh"
@@ -137,6 +137,7 @@ function upgrade_flutter () {
   exit $?
 }
 
+if [[ $# == 1 && "$1" == "rebuild" ]]; then REBUILD_SELF=true; else REBUILD_SELF=false; fi
 PROG_NAME="$(path_uri "$(follow_links "$BASH_SOURCE")")"
 BIN_DIR="$(cd "${PROG_NAME%/*}" ; pwd -P)"
 export FLUTTER_ROOT="$(cd "${BIN_DIR}/.." ; pwd -P)"
@@ -187,6 +188,13 @@ fi
 
 (upgrade_flutter) 3< "$PROG_NAME"
 
-# FLUTTER_TOOL_ARGS isn't quoted below, because it is meant to be considered as
-# separate space-separated args.
-"$DART" --disable-dart-dev --packages="$FLUTTER_TOOLS_DIR/.packages" $FLUTTER_TOOL_ARGS "$SNAPSHOT_PATH" "$@"
+if [[ "$REBUILD_SELF" != "true" ]]; then
+  # FLUTTER_TOOL_ARGS isn't quoted below, because it is meant to be considered as
+  # separate space-separated args.
+  "$DART" --disable-dart-dev --packages="$FLUTTER_TOOLS_DIR/.packages" $FLUTTER_TOOL_ARGS "$SNAPSHOT_PATH" "$@"
+fi
+
+# Add some help on how to rebuild flutter
+if [[ $# == 0 ]] || [[ $# == 1 && "$1" == "help" ]] || [[ $# == 2 && "$1" == "help" && "$2" == "-v" ]]; then
+  echo Run \"flutter rebuild\" to rebuild flutter itself
+fi
